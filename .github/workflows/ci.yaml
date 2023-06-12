@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install -r requirements.txt
+      - run: pytest
+
+  robot-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install -r requirements.txt
+      - run: robot -d results hsl.robot
+        env:
+          HSL_API_KEY: ${{ secrets.hsl_api_key }}
+      - name: Archive Robot results
+        uses: actions/upload-artifact@v3
+        with:
+          name: robot-results
+          path: results
